@@ -37,16 +37,16 @@ for kk = 1:nker
    h(4,1) = 0;
    for ii = 1:nlen
       n = nvec(ii);
-      h(1) = loglog([n n]/fudge, quantile(D(ii,2:end),[0.1 0.9]),'s-','color',MATLABBlue, ...
-         'markersize',8,'markerfacecolor',MATLABBlue);
-      h(2) = loglog(n/fudge,D(ii,1),'.','color',MATLABBlue)];
-      h(3) = loglog([n n]*fudge, quantile(Dmiss(ii,2:end),[0.1 0.9]),'s-','color',MATLABOrange, ...
-         'markersize',8,'markerfacecolor',MATLABOrange)];
-      h(4) = loglog(n*fudge,Dmiss(ii,1),'.','color',MATLABOrange)];
+      h(2) = loglog([n n]/fudge, quantile(D(ii,2:end),[0.1 0.9]),'s-','color',MATLABBlue, ...
+         'markersize',6,'markerfacecolor',MATLABBlue);
+      h(1) = loglog(n/fudge,D(ii,1),'.','color',MATLABBlue,'markersize',20);
+      h(4) = loglog([n n]*fudge, quantile(Dmiss(ii,2:end),[0.1 0.9]),'s-','color',MATLABOrange, ...
+         'markersize',6,'markerfacecolor',MATLABOrange);
+      h(3) = loglog(n*fudge,Dmiss(ii,1),'.','color',MATLABOrange,'markersize',20);
    end
    xlabel('\(n\)')
    ylabel([kername ' Discrepancy'])
-   legend(h([2 1 4 3]),{'1st no scr.', '1st 10\%-90\% scr.', ...
+   legend(h,{'1st no scr.', '1st 10\%-90\% scr.', ...
       '2nd no scr.', '2nd 10\%-90\% scr.'},'box','off')
    print('-depsc',[kername 'DiscrepancyPlot.eps'])
 end
