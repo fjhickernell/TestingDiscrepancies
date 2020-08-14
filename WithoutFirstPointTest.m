@@ -1,5 +1,5 @@
 %% Testing discrepancies of sets of points with and without the first one
-gail.InitializeWorkspaceDisplay
+InitializeWorkspaceDisplay
 tic
 format short e
 dvec = [2 5 10];
