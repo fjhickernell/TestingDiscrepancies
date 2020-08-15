@@ -8,7 +8,8 @@ powvec = [0 1 2];
 npow = length(powvec);
 nvec = 2.^(4:12)';
 nlen = length(nvec);
-nrep = 500;
+nstart = 2;
+nrep = 499 + nstart;
 D(nlen,nrep) = 0;
 Dmiss(nlen,nrep) = 0;
 kernelvec = {@starkernel,@centerkernel}; 
@@ -25,14 +26,18 @@ for mm = 1:npow
          kername = kernamevec{kk};
          for jj = 1:nrep
             p = sobolset(d);
-            if jj > 1
+            if jj > nstart
                p = scramble(p,'MatousekAffineOwen');
             end
             x = net(p,nvec(end)+1);
             for ii = 1:nlen
                n = nvec(ii);
-               D(ii,jj) = discrepancy(kernel,x(1:n,:),weights(1:d));
-               Dmiss(ii,jj) = discrepancy(kernel,x(2:n+1,:),weights(1:d));
+               if jj == 2
+                  D(ii,jj) = discrepancy(kernel,x(1:n,:)+1/(2*n),weights(1:d));
+               else
+                  D(ii,jj) = discrepancy(kernel,x(1:n,:),weights(1:d));
+                  Dmiss(ii,jj) = discrepancy(kernel,x(2:n+1,:),weights(1:d));
+               end
             end
          end
          summmary = ...
@@ -45,18 +50,20 @@ for mm = 1:npow
          h(4,1) = 0;
          for ii = 1:nlen
             n = nvec(ii);
-            h(2) = loglog([n n]/fudge, quantile(D(ii,2:end),[0.1 0.9]),'s-','color',MATLABBlue, ...
+            h(3) = loglog([n n]/fudge, quantile(D(ii,3:end),[0.1 0.9]),'s-','color',MATLABBlue, ...
                'markersize',6,'markerfacecolor',MATLABBlue);
             h(1) = loglog(n/fudge,D(ii,1),'.','color',MATLABBlue,'markersize',20);
-            h(4) = loglog([n n]*fudge, quantile(Dmiss(ii,2:end),[0.1 0.9]),'s-','color',MATLABOrange, ...
+            h(2) = loglog(n/fudge,D(ii,2),'d','color',MATLABBlue, ...
+               'markersize',6,'markerfacecolor',MATLABBlue);
+            h(5) = loglog([n n]*fudge, quantile(Dmiss(ii,3:end),[0.1 0.9]),'s-','color',MATLABOrange, ...
                'markersize',6,'markerfacecolor',MATLABOrange);
-            h(3) = loglog(n*fudge,Dmiss(ii,1),'.','color',MATLABOrange,'markersize',20);
+            h(4) = loglog(n*fudge,Dmiss(ii,1),'.','color',MATLABOrange,'markersize',20);
          end
          % axis([10 1e4 1e-4 1])
          xlabel('\(n\)')
          ylabel([kername ' Discrepancy'])
          title(['\(d = ' int2str(d) '\), \quad weights \( = j^{-' int2str(pow) '}\)'])
-         legend(h,{'1st no scr.', '1st 10\%-90\% scr.', ...
+         legend(h,{'1st no scr.', '1st no scr.\ ctr.', '1st 10\%-90\% scr.', ...
             '2nd no scr.', '2nd 10\%-90\% scr.'},'box','off','location','southwest')
          print('-depsc',[kername 'DiscrepancyPlot n=' int2str(n) 'd=' int2str(d) 'p=' int2str(pow) '.eps'])
       end
